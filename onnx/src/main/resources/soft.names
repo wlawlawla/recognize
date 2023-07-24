@@ -1,6 +1,6 @@
-open
-close
-on
-off
-open_v2
-close_v2
+soft_open
+soft_close
+soft_on
+soft_off
+soft_open_v2
+soft_close_v2
