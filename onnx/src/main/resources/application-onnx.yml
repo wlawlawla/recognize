@@ -1,0 +1,12 @@
+
+
+model:
+  config:
+    nmsThreshold: 0.5
+    gpuDeviceId: -1
+    soft:
+      modelPath: soft
+      labelPath: soft.names
+    hard:
+      modelPath: hard
+      labelPath: hard.names

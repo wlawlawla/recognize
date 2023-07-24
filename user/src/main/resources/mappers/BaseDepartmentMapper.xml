@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recognize.user.mapper.BaseDepartmentMapper">
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.recognize.user.entity.BaseDepartmentEntity">
+        <id column="department_id" jdbcType="BIGINT" property="departmentId"/>
+        <id column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <id column="department_name" jdbcType="BIGINT" property="departmentName"/>
+        <id column="order_num" jdbcType="BIGINT" property="orderNumber"/>
+        <id column="is_del" jdbcType="BIGINT" property="del"/>
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <id column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <id column="updt_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <id column="updt_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+
+
+    <select id="getMaxOrderNumber" resultType="java.lang.Integer">
+        select ifnull(max(d.order_num), 0)
+        FROM base_department d
+        where d.is_del = 0 and d.order_num is not null
+        <if test="parentId !=null">
+            and d.parent_id = #{parentId}
+        </if>
+        <if test="parentId == null">
+            and d.parent_id is null
+        </if>
+
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from base_department where is_del = 0
+    </select>
+
+
+</mapper>

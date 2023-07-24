@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recognize.user.mapper.BaseUserDepartmentXwMapper">
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.recognize.user.entity.BaseUserDepartmentXwEntity">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <id column="user_id" jdbcType="BIGINT" property="userId"/>
+        <id column="department_id" jdbcType="BIGINT" property="departmentId"/>
+        <id column="is_del" jdbcType="BIGINT" property="del"/>
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <id column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <id column="updt_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <id column="updt_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+
+    <update id="updateUserDepartmentXwByUserId">
+        update base_user_department_xw xw
+        set xw.is_del    = 1,
+            xw.updt_time = now(),
+            xw.updt_by   = #{updateUserId}
+        where xw.user_id = #{userId}
+          and xw.is_del = 0
+    </update>
+</mapper>

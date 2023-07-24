@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recognize.user.mapper.BaseUserMapper">
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.recognize.user.entity.BaseUserEntity">
+        <id column="user_id" jdbcType="BIGINT" property="userId"/>
+        <id column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <id column="full_name" jdbcType="VARCHAR" property="fullName"/>
+        <id column="password" jdbcType="VARCHAR" property="password"/>
+        <id column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+        <id column="call_num" jdbcType="VARCHAR" property="callNumber"/>
+        <id column="status" jdbcType="BIGINT" property="status"/>
+        <id column="is_del" jdbcType="BIGINT" property="del"/>
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <id column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <id column="updt_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <id column="updt_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select *
+        from base_user
+    </select>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select *
+        from base_user
+        where user_id = #{id} and is_Del = 0
+    </select>
+
+    <select id="findByName" resultMap="BaseResultMap">
+        select *
+        from base_user
+        where user_name = #{name}
+    </select>
+
+    <select id="searchUser" resultMap="BaseResultMap">
+        select t.* from(
+        select distinct u.*
+        FROM base_user u
+        inner join base_user_department_xw dxw on u.user_id = dxw.user_id
+        where u.is_del = 0
+        and u.status = 1
+        and dxw.is_del = 0
+        <if test="param !=null">
+            <if test="param.searchText !=null">
+                and (INSTR(u.user_name, #{param.searchText}) > 0 or INSTR(u.nick_name, #{param.searchText}) > 0 or
+                INSTR(u.full_name, #{param.searchText}) > 0)
+            </if>
+
+            <if test="param.departmentIds !=null and param.departmentIds.size > 0">
+                and dxw.department_id in
+                <foreach collection="param.departmentIds" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </if>
+
+        ) t order by t.create_time desc
+    </select>
+
+
+</mapper>

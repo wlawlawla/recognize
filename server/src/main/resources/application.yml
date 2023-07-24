@@ -1,0 +1,80 @@
+server:
+  servlet:
+    context-path: /
+  port: 9900
+
+spring:
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
+  security:
+    oauth2:
+      client:
+        registration:
+          custom-client:
+            client-id: client-id
+            client-secret: client-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope:
+              - read
+              - write
+            client-name: Custom Client
+        provider:
+          custom-provider:
+            authorization-uri: https://custom-provider.com/oauth/authorize
+            token-uri: https://custom-provider.com/oauth/token
+            user-info-uri: https://custom-provider.com/userinfo
+            user-name-attribute: sub
+  datasource:
+    connection-timeout: 90000
+    validation-timeout: 5000
+    maximum-pool-size: 100
+    min-idle: 20
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: local
+    password: Abc123
+    url: jdbc:mysql://127.0.0.1:3306/mydatabase?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+
+  redis:
+    host: 127.0.0.1
+    port: 6379 #Redis默认端口
+    password: abc123
+    lettuce:
+      pool:
+        max-active: 8
+        # 最大阻塞等待时间(使用负数表示没有限制)
+        max-wait: 1ms
+        # 最大空闲链接
+        max-idle: 8
+        # 最小空闲链接
+        min-idle: 0
+  profiles:
+    active: onnx
+
+
+jwt:
+  # 密匙KEY
+  secret: JWTSecret
+  # HeaderKEY
+  tokenHeader: Authorization
+  # Token前缀字符
+  tokenPrefix: andy-
+  # 过期时间 单位秒 1天后过期=86400 7天后过期=604800
+  expiration: 36000
+  # 配置不需要认证的接口
+  antMatchers: /test/**,/login/**
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/mappers/*.xml #这个配置是用来连接mapper接口和mapper配置类的
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #运行日志
+    map-underscore-to-camel-case: true #驼峰转换
+  type-aliases-package: com.example.springbootdemo.model #实体类扫描包
+
+# 日志配置
+logging:
+  file:
+    name: recognize_v1.log

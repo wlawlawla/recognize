@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recognize.user.mapper.BaseRoleMapper">
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.recognize.user.entity.BaseRoleEntity">
+        <id column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <id column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <id column="is_del" jdbcType="BIGINT" property="del"/>
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <id column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <id column="updt_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <id column="updt_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+
+
+    <!-- auto generated method findAll -->
+    <select id="findAll"  resultMap="BaseResultMap">
+        select *
+        from base_role
+    </select>
+
+    <select id="findByRoleId" resultMap="BaseResultMap">
+        select * from base_role where role_id = #{roleId}
+    </select>
+
+    <select id="findByUserId" resultMap="BaseResultMap">
+        select r.* from base_role r
+        inner join base_user_role_xw xw
+        on r.role_id = xw.role_id
+        where xw.user_id = #{userId}
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recognize.user.mapper.BasePrivilegeMapper">
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.recognize.user.entity.BasePrivilegeEntity">
+        <id column="privilege_id" jdbcType="BIGINT" property="privilegeId"/>
+        <id column="privilege_code" jdbcType="VARCHAR" property="privilegeCode"/>
+        <id column="privilege_name" jdbcType="VARCHAR" property="privilegeName"/>
+        <id column="is_del" jdbcType="BIGINT" property="del"/>
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <id column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <id column="updt_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <id column="updt_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="BaseResultMap">
+        select  distinct p.* from base_privilege p
+                                      inner join base_role_privilege_xw rxw on p.privilege_id = rxw.privilege_id
+                                      inner join base_user_role_xw uxw on uxw.role_id = rxw.role_id
+        where uxw.user_id = #{userId}
+    </select>
+
+
+
+</mapper>
