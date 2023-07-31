@@ -1,4 +1,4 @@
-package com.recognize.util;
+package com.recognize.onnx.util;
 
 import com.recognize.onnx.yolo.Detection;
 import org.springframework.util.CollectionUtils;

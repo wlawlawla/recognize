@@ -85,7 +85,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             return null;
         }
 
-        BaseDepartmentEntity baseDepartmentEntity = baseDepartmentMapper.selectById(departmentId);
+        BaseDepartmentEntity baseDepartmentEntity = baseDepartmentMapper.findById(departmentId);
         if (baseDepartmentEntity == null || BaseConstants.BASE_ENTITY_INVALID.equals(baseDepartmentEntity.getDel())) {
             return null;
         }
@@ -106,7 +106,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             throw new ResultErrorException(ResultErrorEnum.BAD_REQUEST);
         }
 
-        BaseDepartmentEntity dbDepartmentEntity = baseDepartmentMapper.selectById(baseDepartmentVO.getDepartmentId());
+        BaseDepartmentEntity dbDepartmentEntity = baseDepartmentMapper.findById(baseDepartmentVO.getDepartmentId());
         if (dbDepartmentEntity == null || BaseConstants.BASE_ENTITY_INVALID.equals(dbDepartmentEntity.getDel())) {
             throw new ResultErrorException(ValidationError.setMissing("删除失败，部门不存在：departmentId = " + baseDepartmentVO.getDepartmentId()));
         }

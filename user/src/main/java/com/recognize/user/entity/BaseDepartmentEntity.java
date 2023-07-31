@@ -17,8 +17,6 @@ import java.time.LocalDateTime;
 @TableName(value = "base_department")
 public class BaseDepartmentEntity implements Serializable {
 
-    private static final long serialVersionUID = -1L;
-
     @TableId(value = "department_id", type = IdType.AUTO)
     private Long departmentId;
 

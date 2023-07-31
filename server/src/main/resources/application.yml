@@ -35,21 +35,21 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
     username: local
     password: Abc123
-    url: jdbc:mysql://127.0.0.1:3306/mydatabase?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
+    url: jdbc:mysql://192.168.5.39:3306/mydatabase?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
 
-  redis:
-    host: 127.0.0.1
-    port: 6379 #Redis默认端口
-    password: abc123
-    lettuce:
-      pool:
-        max-active: 8
-        # 最大阻塞等待时间(使用负数表示没有限制)
-        max-wait: 1ms
-        # 最大空闲链接
-        max-idle: 8
-        # 最小空闲链接
-        min-idle: 0
+  #redis:
+  #  host: 127.0.0.1
+  #  port: 6379 #Redis默认端口
+  #  password: abc123
+  #  lettuce:
+  #    pool:
+  #      max-active: 8
+  #      # 最大阻塞等待时间(使用负数表示没有限制)
+  #      max-wait: 1ms
+  #      # 最大空闲链接
+  #      max-idle: 8
+  #      # 最小空闲链接
+  #      min-idle: 0
   profiles:
     active: onnx
 
@@ -62,7 +62,7 @@ jwt:
   # Token前缀字符
   tokenPrefix: andy-
   # 过期时间 单位秒 1天后过期=86400 7天后过期=604800
-  expiration: 36000
+  expiration: 604800
   # 配置不需要认证的接口
   antMatchers: /test/**,/login/**
 

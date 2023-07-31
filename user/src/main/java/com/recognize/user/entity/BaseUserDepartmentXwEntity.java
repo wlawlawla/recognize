@@ -16,8 +16,6 @@ import java.time.LocalDateTime;
 @TableName(value = "base_user_department_xw")
 public class BaseUserDepartmentXwEntity {
 
-    private static final long serialVersionUID = -1L;
-
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 

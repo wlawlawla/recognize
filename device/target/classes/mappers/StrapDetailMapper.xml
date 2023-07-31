@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recognize.device.mapper.StrapDetailMapper">
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.recognize.device.entity.StrapDetailEntity">
+        <id column="strap_id" jdbcType="BIGINT" property="strapId"/>
+        <id column="screen_id" jdbcType="BIGINT" property="screenId"/>
+        <id column="strap_name" jdbcType="VARCHAR" property="strapValue"/>
+        <id column="strap_value" jdbcType="VARCHAR" property="strapName"/>
+        <id column="strap_position" jdbcType="BIGINT" property="strapPosition"/>
+        <id column="is_del" jdbcType="BIGINT" property="del"/>
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <id column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <id column="updt_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <id column="updt_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+
+    <select id="findByScreenId" resultMap="BaseResultMap">
+        select c.* from strap_detail c where c.screen_id = #{screenId} and c.is_del = 0 order by c.strap_position asc
+    </select>
+
+    <select id="findByStrapId" resultMap="BaseResultMap">
+        select c.* from strap_detail c where c.strap_id = #{strapId} and c.is_del = 0
+    </select>
+
+</mapper>

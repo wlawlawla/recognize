@@ -9,6 +9,7 @@
         <module>onnx</module>
         <module>user</module>
         <module>server</module>
+        <module>device</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -141,6 +142,17 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.7.15</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.2</version>
         </dependency>
 
     </dependencies>

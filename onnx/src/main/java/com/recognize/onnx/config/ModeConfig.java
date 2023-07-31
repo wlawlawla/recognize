@@ -1,20 +1,14 @@
-package com.recognize.config;
+package com.recognize.onnx.config;
 
 import ai.onnxruntime.OrtException;
 import com.recognize.common.util.FileUtil;
 import com.recognize.onnx.yolo.YoloModelHard;
 import com.recognize.onnx.yolo.YoloModelSoft;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 @Configuration
 public class ModeConfig {

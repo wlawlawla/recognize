@@ -1,10 +1,9 @@
 package com.recognize.onnx.controller;
 
 import ai.onnxruntime.OrtException;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.recognize.onnx.service.IDetectionService;
 import com.recognize.onnx.yolo.Detection;
-import com.recognize.util.ImageUtil;
+import com.recognize.onnx.util.ImageUtil;
 import com.recognize.onnx.yolo.YoloModelHard;
 import com.recognize.onnx.yolo.YoloModelSoft;
 import org.opencv.core.Mat;
@@ -70,18 +69,12 @@ public class DetectionController {
     }*/
 
     @PostMapping(value = "/detection/soft")
-    public List<Detection> detectionSoft(@RequestParam(name = "uploadFile") MultipartFile uploadFile) throws OrtException, IOException {
+    public List<Detection> detectionSoft(@RequestParam(name = "uploadFile") MultipartFile uploadFile,
+                                         @RequestParam(name = "size") Integer size) throws OrtException, IOException {
         if (!mimeTypes.contains(uploadFile.getContentType())) {
             return null;
         }
-        byte[] bytes = uploadFile.getBytes();
-        Mat img = Imgcodecs.imdecode(new MatOfByte(bytes), Imgcodecs.IMREAD_COLOR);
-        List<Detection> result = yoloModelSoft.run(img, PARAM_CONF);
-        Map<String, Integer> labelMap = yoloModelSoft.getLabelNames().stream().collect(Collectors.toMap(name -> name, name -> yoloModelSoft.getLabelNames().indexOf(name)));
-
-        ImageUtil.drawPredictions(img, result, labelMap);
-
-        Imgcodecs.imwrite("predictions.jpg", img);
+        List<Detection> result = detectionService.recognize(yoloModelSoft, uploadFile, size);
         return result;
     }
 }

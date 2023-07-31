@@ -19,8 +19,6 @@ import java.util.Collection;
 @TableName(value = "base_user")
 public class BaseUserEntity implements Serializable {
 
-    private static final long serialVersionUID = -1L;
-
     @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
 

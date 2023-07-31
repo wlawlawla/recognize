@@ -23,4 +23,11 @@ public interface BaseDepartmentMapper extends BaseMapper<BaseDepartmentEntity> {
      * @return
      */
     List<BaseDepartmentEntity> findAll();
+
+    /**
+     * 根据主键查询
+     * @param id
+     * @return
+     */
+    BaseDepartmentEntity findById(@Param("id") Long id);
 }

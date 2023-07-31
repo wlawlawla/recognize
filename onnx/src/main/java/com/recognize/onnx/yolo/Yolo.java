@@ -2,7 +2,7 @@ package com.recognize.onnx.yolo;
 
 import ai.onnxruntime.*;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.recognize.util.ImageUtil;
+import com.recognize.onnx.util.ImageUtil;
 import lombok.Data;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;

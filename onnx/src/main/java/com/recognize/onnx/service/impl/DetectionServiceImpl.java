@@ -7,9 +7,10 @@ import com.recognize.common.constant.BaseConstants;
 import com.recognize.common.service.IConstantService;
 import com.recognize.common.vo.ConstantVO;
 import com.recognize.onnx.service.IDetectionService;
+import com.recognize.onnx.vo.DetectionSortVO;
 import com.recognize.onnx.yolo.Detection;
 import com.recognize.onnx.yolo.Yolo;
-import com.recognize.util.ImageUtil;
+import com.recognize.onnx.util.ImageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -64,15 +65,20 @@ public class DetectionServiceImpl implements IDetectionService {
 
         List<Detection> result = recognize(yoloModel, img, size, PARAM_CONF);
 
-        if (CollectionUtils.isNotEmpty(result)){
+/*        if (CollectionUtils.isNotEmpty(result)){
             result.sort(Comparator.comparing(Detection::getConfidence));
             Collections.reverse(result);
-/*            for (int i = 0; i < result.size(); i++){
-                result.get(i).setLabel(result.get(i).getLabel() + i);
-            }*/
+        }*/
+        List<Detection> drawList = new ArrayList<>();
+        List<DetectionSortVO> detectionSortVOList = getDetectionSortList(result);
+        for (int i = 0; i < detectionSortVOList.size(); i++){
+            drawList.addAll(detectionSortVOList.get(i).getDetectionList());
+            for (int j = 0; j < detectionSortVOList.get(i).getDetectionList().size(); j++){
+                detectionSortVOList.get(i).getDetectionList().get(j).setLabel(i+"-"+j+"-"+detectionSortVOList.get(i).getDetectionList().get(j).getLabel());
+            }
         }
 
-        ImageUtil.drawPredictions(img, result, yoloModel.getLabelMap());
+        ImageUtil.drawPredictions(img, drawList, yoloModel.getLabelMap());
 
         Imgcodecs.imwrite("predictions.jpg", img);
         return result;
@@ -251,7 +257,7 @@ public class DetectionServiceImpl implements IDetectionService {
         }
 
         //识别结果相同，比较置信度，保留置信度较高的
-        if (a.getLabel().equals(b.getLabel())){
+        if (a.getLabel().equals(b.getLabel()) || (a.getLabel().contains("soft") && b.getLabel().contains("soft"))){
             if (a.getConfidence() > b.getConfidence()){
                 b.setDel(true);
             }else {
@@ -317,6 +323,36 @@ public class DetectionServiceImpl implements IDetectionService {
             return true;
         }
         return false;
+    }
+
+
+    private List<DetectionSortVO> getDetectionSortList(List<Detection> detectionList){
+        List<DetectionSortVO> detectionSortVOList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(detectionList)){
+
+            detectionList.sort(Comparator.comparing(detection -> detection.getBbox()[0]));
+
+            detectionList.forEach(detection -> {
+
+                //根据y坐标分组，并且动态更新最大最小值
+                //分组逻辑： 当前框的y坐标最大值处于分组坐标的上半部分 或 当前框的y坐标处于分组坐标的下半部分 认为是属于当前分组
+                for (DetectionSortVO detectionSortVO : detectionSortVOList){
+                    float mid = (detectionSortVO.getMaxY() + detectionSortVO.getMinY()) / 2f;
+                    if ((detection.getBbox()[1] >= detectionSortVO.getMinY() && detection.getBbox()[1] <= mid)
+                            || ((detection.getBbox()[3] <= detectionSortVO.getMaxY() && detection.getBbox()[3] >= mid))){
+                        detectionSortVO.insertAndUpdateMaxYAndMinY(detection);
+                        return;
+                    }
+                }
+
+                detectionSortVOList.add(new DetectionSortVO(detection));
+
+            });
+
+            detectionSortVOList.sort(Comparator.comparing(DetectionSortVO::getMaxY));
+        }
+
+        return detectionSortVOList;
     }
 
 }

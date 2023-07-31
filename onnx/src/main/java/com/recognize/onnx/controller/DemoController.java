@@ -3,19 +3,17 @@ package com.recognize.onnx.controller;
 import ai.onnxruntime.OrtException;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.recognize.onnx.yolo.*;
-import com.recognize.util.ImageUtil;
-import com.recognize.util.LabelImgUtil;
+import com.recognize.onnx.util.ImageUtil;
+import com.recognize.onnx.util.LabelImgUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,11 +32,11 @@ public class DemoController {
 
     @GetMapping("/g")
     public void test7(){
-        ArrayList<String> labelNames = yoloModelHard.getLabelNames();
+        ArrayList<String> labelNames = yoloModelSoft.getLabelNames();
         Map<String, Integer> labelMap = labelNames.stream().collect(Collectors.toMap(name -> name, name -> labelNames.indexOf(name)));
 
-        File file = new File("C:\\Users\\wangjd\\Desktop\\压板照片");
-        String targePathStr = "C:\\Users\\wangjd\\Desktop\\压板照片\\recog" + "\\";
+        File file = new File("C:\\Users\\wangjd\\Desktop\\soft\\images\\test");
+        String targePathStr = "C:\\Users\\wangjd\\Desktop\\soft\\images\\recog" + "\\";
         int i = 0;
         for (File child : file.listFiles()){
             try {
@@ -62,9 +60,9 @@ public class DemoController {
                 Files.copy(child.toPath(), new File(targePathStr + i + "\\" + name).toPath());*/
                 Mat img = Imgcodecs.imdecode(new MatOfByte(buffer), Imgcodecs.IMREAD_COLOR);
 
-                List<Detection> result = yoloModelHard.run(img, PARAM_CONF);
+                List<Detection> result = yoloModelSoft.run(img, PARAM_CONF);
                 ImageUtil.drawPredictions(img, result, labelMap);
-                Imgcodecs.imwrite(targePathStr + name + i + ".jpg", img);
+                Imgcodecs.imwrite(targePathStr + name /*+ i + ".jpg"*/, img);
                 i++;
             } catch (Exception e) {
                 e.printStackTrace();

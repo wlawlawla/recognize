@@ -163,7 +163,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Override
     public String deleteByUserId(Long userId){
         try {
-            String userName = baseUserMapper.selectById(userId).getUserName();
+            String userName = baseUserMapper.findById(userId).getUserName();
             baseUserMapper.deleteById(userId);
             return userName;
         } catch (RuntimeException e){
