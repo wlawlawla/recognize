@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class ModeConfig {
@@ -16,14 +19,14 @@ public class ModeConfig {
     @Value("${model.config.soft.modelPath}")
     private String softModelPath;
 
-    @Value("${model.config.soft.labelPath}")
-    private String softLabelPath;
+    @Value("${model.config.soft.label}")
+    private String softLabel;
 
     @Value("${model.config.hard.modelPath}")
     private String HardModelPath;
 
-    @Value("${model.config.hard.labelPath}")
-    private String HardLabelPath;
+    @Value("${model.config.hard.label}")
+    private String hardLabel;
 
     @Value("${model.config.nmsThreshold}")
     private String nmsThreshold;
@@ -39,10 +42,9 @@ public class ModeConfig {
      */
     @Bean(name = "ModelSoft")
     public YoloModelSoft getSoft() throws IOException, OrtException{
-        String modelPathReal = FileUtil.getFile(this, softModelPath, softModelPath).getCanonicalPath();
-        String labelPathReal = FileUtil.getFile(this, softLabelPath, softLabelPath).getCanonicalPath();
-        return new YoloModelSoft(modelPathReal, labelPathReal, Float.parseFloat(nmsThreshold), Integer.parseInt(gpuDeviceId)) {
-        };
+        File modelFile = FileUtil.getFile(this, softModelPath, softModelPath);
+        String modelPathReal = modelFile.getCanonicalPath();
+        return new YoloModelSoft(modelPathReal, Float.parseFloat(nmsThreshold), Integer.parseInt(gpuDeviceId), modelFile, Arrays.asList(softLabel.replace(" ", "").split(",")));
     }
 
     /**
@@ -53,9 +55,9 @@ public class ModeConfig {
      */
     @Bean(name = "ModelHard")
     public YoloModelHard getHard() throws IOException, OrtException{
-        String modelPathReal = FileUtil.getFile(this, HardModelPath, HardModelPath).getCanonicalPath();
-        String labelPathReal = FileUtil.getFile(this, HardLabelPath, HardLabelPath).getCanonicalPath();
-        return new YoloModelHard(modelPathReal, labelPathReal, Float.parseFloat(nmsThreshold), Integer.parseInt(gpuDeviceId));
+        File modelFile = FileUtil.getFile(this, HardModelPath, HardModelPath);
+        String modelPathReal = modelFile.getCanonicalPath();
+        return new YoloModelHard(modelPathReal, Float.parseFloat(nmsThreshold), Integer.parseInt(gpuDeviceId), modelFile, Arrays.asList(hardLabel.replace(" ", "").split(", ")));
     }
 
 

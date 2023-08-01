@@ -6,7 +6,7 @@ model:
     gpuDeviceId: -1
     soft:
       modelPath: soft
-      labelPath: soft.names
+      label: soft_open, soft_close, soft_on, soft_off, soft_open_v2, soft_close_v2
     hard:
       modelPath: hard
-      labelPath: hard.names
+      label: hard_open, hard_close, hard_none, hard_close_v2, hard_close_v3, hard_open_v2, hard_open_v3, hard_open_or_close

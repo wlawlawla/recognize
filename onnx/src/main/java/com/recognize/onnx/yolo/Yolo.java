@@ -9,6 +9,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -32,7 +33,7 @@ public class  Yolo {
 
     OnnxTensor inputTensor;
 
-    public Yolo(String modelPath, String labelPath, float nmsThreshold, int gpuDeviceId) throws OrtException, IOException {
+    public Yolo(String modelPath, float nmsThreshold, int gpuDeviceId, File modelFile, List<String> label) throws OrtException, IOException {
         nu.pattern.OpenCV.loadLocally();
 
         this.env = OrtEnvironment.getEnvironment();
@@ -49,16 +50,17 @@ public class  Yolo {
         this.inputType = ((TensorInfo) inputMeta.getInfo()).type;
 
         this.nmsThreshold = nmsThreshold;
-
-        BufferedReader br = new BufferedReader(new FileReader(labelPath));
+        this.labelNames.addAll(label);
+      /*  BufferedReader br = new BufferedReader(new FileReader(labelPath));
         String line;
         while ((line = br.readLine()) != null) {
             this.labelNames.add(line);
-        }
+        }*/
         if (CollectionUtils.isNotEmpty(this.labelNames)){
             this.labelMap.putAll(this.labelNames.stream().collect(Collectors.toMap(name -> name, name -> this.labelNames.indexOf(name))));
         }
 
+        modelFile.delete();
     }
 
     private float computeIOU(float[] box1, float[] box2) {
