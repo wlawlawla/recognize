@@ -1,5 +1,6 @@
 package com.recognize.user.controller;
 
+import com.recognize.common.common.PrivilegeConstants;
 import com.recognize.user.service.IDepartmentService;
 import com.recognize.user.util.LoginUser;
 import com.recognize.user.vo.BaseDepartmentVO;
@@ -7,6 +8,7 @@ import com.recognize.user.vo.BaseUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,6 +28,7 @@ public class BaseDepartmentController {
      * @return
      */
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEPARTMENT_ADD + "')")
     public ResponseEntity<BaseDepartmentVO> addDepartment(@Valid @RequestBody BaseDepartmentVO baseDepartmentVO, @LoginUser BaseUserVO baseUserVO){
         return new ResponseEntity<>(departmentService.addDepartment(baseDepartmentVO, baseUserVO), HttpStatus.OK);
     }
@@ -35,6 +38,7 @@ public class BaseDepartmentController {
      * @return
      */
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEPARTMENT_VIEW + "')")
     public ResponseEntity<List<BaseDepartmentVO>> getDepartmentTree(){
         return new ResponseEntity<>(departmentService.getDepartmentTree(), HttpStatus.OK);
     }
@@ -46,6 +50,7 @@ public class BaseDepartmentController {
      * @param baseUserVO
      */
     @DeleteMapping("/{departmentId}")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEPARTMENT_DELETE + "')")
     public ResponseEntity<String> deleteDepartment(@PathVariable Long departmentId, @LoginUser BaseUserVO baseUserVO){
         return new ResponseEntity<>(departmentService.deleteDepartment(departmentId, baseUserVO), HttpStatus.OK);
     }
@@ -57,6 +62,7 @@ public class BaseDepartmentController {
      * @return
      */
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEPARTMENT_UPDATE + "')")
     public ResponseEntity<BaseDepartmentVO> updateDepartment(@RequestBody BaseDepartmentVO baseDepartmentVO, @LoginUser BaseUserVO baseUserVO){
         return new ResponseEntity<>(departmentService.updateDepartment(baseDepartmentVO, baseUserVO), HttpStatus.OK);
     }

@@ -1,5 +1,6 @@
 package com.recognize.device.controller;
 
+import com.recognize.common.common.PrivilegeConstants;
 import com.recognize.device.service.IDeviceInfoService;
 import com.recognize.device.service.IStrapService;
 import com.recognize.device.vo.DeviceInfoVO;
@@ -10,6 +11,7 @@ import com.recognize.user.vo.BaseUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +36,7 @@ public class DeviceController {
      * @throws IOException
      */
     @PostMapping("/import")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEVICE_ADD + "')")
     public ResponseEntity<List<DeviceInfoVO>> importDevice(@RequestParam(value = "file")MultipartFile file, @LoginUser BaseUserVO currentUser) throws IOException {
         return new ResponseEntity<>(deviceInfoService.importDeviceInfo(file, currentUser), HttpStatus.OK);
     }
@@ -46,6 +49,7 @@ public class DeviceController {
      * @throws IOException
      */
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEVICE_ADD + "')")
     public ResponseEntity<DeviceInfoVO> addDevice(@RequestBody DeviceInfoVO deviceInfoVO, @LoginUser BaseUserVO currentUser) throws IOException {
         return new ResponseEntity<>(deviceInfoService.addDevice(deviceInfoVO, currentUser), HttpStatus.OK);
     }
@@ -57,6 +61,7 @@ public class DeviceController {
      * @return
      */
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEVICE_UPDATE + "')")
     public ResponseEntity<DeviceInfoVO> updateDevice(@RequestBody DeviceInfoVO deviceInfoVO, @LoginUser BaseUserVO currentUser){
         return new ResponseEntity<>(deviceInfoService.updateDeviceInfo(deviceInfoVO, currentUser), HttpStatus.OK);
     }
@@ -67,6 +72,7 @@ public class DeviceController {
      * @param currentUser
      */
     @DeleteMapping("/{deviceId}")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEVICE_DELETE + "')")
     public void deleteDevice(@PathVariable Long deviceId, @LoginUser BaseUserVO currentUser){
         deviceInfoService.deleteDevice(deviceId, currentUser);
     }
@@ -77,6 +83,7 @@ public class DeviceController {
      * @return
      */
     @GetMapping("/{deviceId}")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.DEVICE_VIEW + "')")
     public ResponseEntity<DeviceInfoVO> getDeviceDetailById(@PathVariable Long deviceId){
         return new ResponseEntity<>(deviceInfoService.getDeviceInfoById(deviceId), HttpStatus.OK);
     }
@@ -88,6 +95,7 @@ public class DeviceController {
      * @return
      */
     @PostMapping("/screen")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.SCREEN_ADD + "')")
     public ResponseEntity<StrapScreenVO> addStrapScreenInfo(@RequestBody StrapScreenVO strapScreenVO, @LoginUser BaseUserVO currentUser){
         return new ResponseEntity<>(strapService.addStrapScreen(strapScreenVO, currentUser), HttpStatus.OK);
     }
@@ -98,6 +106,7 @@ public class DeviceController {
      * @return
      */
     @GetMapping("/screen/{screenId}")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.SCREEN_VIEW + "')")
     public ResponseEntity<StrapScreenVO> getStrapScreenInfoById(@PathVariable Long screenId){
         return new ResponseEntity<>(strapService.getStrapScreenInfo(screenId), HttpStatus.OK);
     }
@@ -109,6 +118,7 @@ public class DeviceController {
      * @return
      */
     @PutMapping("/screen")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.SCREEN_UPDATE + "')")
     public ResponseEntity<StrapScreenVO> updateScreenInfo(@RequestBody StrapScreenVO strapScreenVO, @LoginUser BaseUserVO currentUser){
         return new ResponseEntity<>(strapService.updateScreen(strapScreenVO, currentUser), HttpStatus.OK);
     }
@@ -119,6 +129,7 @@ public class DeviceController {
      * @param currentUser
      */
     @DeleteMapping("/screen/{screenId}")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.SCREEN_DELETE + "')")
     public void deleteScreenById(@PathVariable Long screenId, @LoginUser BaseUserVO currentUser){
         strapService.deleteScreenById(screenId, currentUser);
     }
@@ -130,6 +141,7 @@ public class DeviceController {
      * @return
      */
     @PostMapping("/screen/strap")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.STRAP_ADD + "')")
     public ResponseEntity<StrapDetailVO> addStrapInfo(@RequestBody StrapDetailVO strapDetailVO, @LoginUser BaseUserVO currentUser){
         return new ResponseEntity<>(strapService.updateStrapDetail(strapDetailVO, currentUser), HttpStatus.OK);
     }
@@ -141,6 +153,7 @@ public class DeviceController {
      * @return
      */
     @PutMapping("/screen/strap")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.SCREEN_UPDATE + "')")
     public ResponseEntity<StrapDetailVO> updateStrapInfo(@RequestBody StrapDetailVO strapDetailVO, @LoginUser BaseUserVO currentUser){
         return new ResponseEntity<>(strapService.updateStrapDetail(strapDetailVO, currentUser), HttpStatus.OK);
     }
@@ -151,6 +164,7 @@ public class DeviceController {
      * @param currentUser
      */
     @DeleteMapping("/screen/strap/{strapId}")
+    @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.SCREEN_DELETE + "')")
     public void deleteByStrapId(@PathVariable Long strapId, @LoginUser BaseUserVO currentUser){
         strapService.deleteStrapDetailById(strapId, currentUser);
     }

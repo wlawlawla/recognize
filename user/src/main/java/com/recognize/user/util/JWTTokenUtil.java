@@ -34,7 +34,7 @@ public class JWTTokenUtil {
                 // 自定义属性 放入用户拥有权限
                 .claim("authorities", JSON.toJSONString(baseUserVO.getAuthorities()))
                 // 失效时间
-                .setExpiration(new Date(System.currentTimeMillis() + JWTConfig.expiration))
+                //.setExpiration(new Date(System.currentTimeMillis() + JWTConfig.expiration))
                 // 签名算法和密钥
                 .signWith(SignatureAlgorithm.HS512, JWTConfig.secret)
                 .compact();
