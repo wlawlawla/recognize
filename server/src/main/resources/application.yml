@@ -31,27 +31,13 @@ spring:
     connection-timeout: 90000
     validation-timeout: 5000
     maximum-pool-size: 100
-    min-idle: 20
+    min-idle: 5
+    max-lifetime: 6000
+    idle-timeout: 60000
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: local
+    username: recognizeUser
     password: Abc123
-    url: jdbc:mysql://192.168.5.39:3306/mydatabase?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
-
-  #redis:
-  #  host: 127.0.0.1
-  #  port: 6379 #Redis默认端口
-  #  password: abc123
-  #  lettuce:
-  #    pool:
-  #      max-active: 8
-  #      # 最大阻塞等待时间(使用负数表示没有限制)
-  #      max-wait: 1ms
-  #      # 最大空闲链接
-  #      max-idle: 8
-  #      # 最小空闲链接
-  #      min-idle: 0
-  profiles:
-    active: onnx
+    url: jdbc:mysql://132.232.211.163:3560/recognize?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true
 
 
 jwt:
@@ -64,7 +50,7 @@ jwt:
   # 过期时间 单位秒 1天后过期=86400 7天后过期=604800
   expiration: 604800
   # 配置不需要认证的接口
-  antMatchers: /test/**,/login/**
+  antMatchers: /test/**,/login/**,/attachment/**
 
 
 mybatis-plus:
@@ -78,3 +64,14 @@ mybatis-plus:
 logging:
   file:
     name: recognize_v1.log
+
+model:
+  config:
+    nmsThreshold: 0.5
+    gpuDeviceId: -1
+    soft:
+      modelPath: soft
+      label: soft_open, soft_close, soft_on, soft_off, soft_open_v2, soft_close_v2
+    hard:
+      modelPath: hard
+      label: hard_open, hard_close, hard_none, hard_close_v2, hard_close_v3, hard_open_v2, hard_open_v3, hard_open_or_close

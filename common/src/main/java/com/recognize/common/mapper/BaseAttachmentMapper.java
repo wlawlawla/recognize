@@ -24,6 +24,12 @@ public interface BaseAttachmentMapper extends BaseMapper<BaseAttachmentEntity> {
      * @param type
      * @return
      */
-    List<BaseAttachmentEntity> findByFkSidAndType(@Param("fkSid") Long fkSid, @Param("type") Integer type);
+    BaseAttachmentEntity findByFkSidAndType(@Param("fkSid") Long fkSid, @Param("type") Integer type);
+
+    /**
+     * 删除附件
+     * @param id
+     */
+    void deleteByAttachmentId(@Param("id") Long id);
 
 }

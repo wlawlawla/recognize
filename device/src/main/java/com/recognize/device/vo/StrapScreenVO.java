@@ -1,5 +1,6 @@
 package com.recognize.device.vo;
 
+import com.recognize.common.constant.BaseConstants;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -81,13 +82,24 @@ public class StrapScreenVO {
     private String remark;
 
     /**
-     * 图片
+     * 图片id
      */
     private Long attachmentId;
+
+    /**
+     * 图片url
+     */
+    private String imageUrl;
 
     /**
      * 压板详细信息
      */
     private List<StrapDetailVO> strapDetailVOList;
+
+    public void setImageUrl(){
+        if (this.attachmentId != null){
+            this.imageUrl = BaseConstants.IMAGE_URL_PREFIX + this.attachmentId;
+        }
+    }
 
 }

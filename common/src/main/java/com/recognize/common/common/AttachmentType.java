@@ -19,8 +19,13 @@ public enum AttachmentType {
     /**
      * 巡检工作图片
      */
-    CHECK_TASK_IMAGE(2);
+    CHECK_TASK_IMAGE(2),
 
+    /**
+     * 压板屏幕图片
+     */
+    SCREEN_IMAGE(3),
+    ;
 
     private int type;
 

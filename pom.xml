@@ -10,6 +10,7 @@
         <module>user</module>
         <module>server</module>
         <module>device</module>
+        <module>task</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -154,6 +155,12 @@
             <artifactId>poi-ooxml</artifactId>
             <version>4.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.3.3</version>
+        </dependency>
+
 
     </dependencies>
 

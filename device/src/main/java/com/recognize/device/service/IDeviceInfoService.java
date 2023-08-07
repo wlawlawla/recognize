@@ -1,9 +1,12 @@
 package com.recognize.device.service;
 
+import com.recognize.common.vo.PageVO;
+import com.recognize.device.parameter.DeviceSearchParameter;
 import com.recognize.device.vo.DeviceInfoVO;
 import com.recognize.device.vo.StationInfoVO;
 import com.recognize.device.vo.StrapScreenVO;
 import com.recognize.user.vo.BaseUserVO;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -58,5 +61,33 @@ public interface IDeviceInfoService {
      * @return
      */
     String deleteDevice(Long deviceId, BaseUserVO currentUser);
+
+    /**
+     * 获取站点列表
+     * @return
+     */
+    List<StationInfoVO> getStationList();
+
+    /**
+     * 根据id获取站点信息
+     * @param stationId
+     * @return
+     */
+    StationInfoVO getStationById(Long stationId);
+
+    /**
+     * 批量查询设备基本信息
+     * @param deviceIds
+     * @return
+     */
+    List<DeviceInfoVO> getDeviceInfoByIdIn(List<Long> deviceIds);
+
+    /**
+     * 获取设备列表
+     * @param pageable
+     * @param searchParameter
+     * @return
+     */
+    PageVO<DeviceInfoVO> searchDevice(Pageable pageable, DeviceSearchParameter searchParameter);
 
 }

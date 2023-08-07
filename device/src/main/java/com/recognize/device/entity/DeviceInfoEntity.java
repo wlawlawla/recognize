@@ -35,6 +35,9 @@ public class DeviceInfoEntity implements Serializable {
     @TableField(value = "order_num")
     private Integer orderNumber;
 
+    @TableField(value = "attachment_id")
+    private Long attachmentId;
+
     @TableField(value = "is_del")
     private Integer del;
 

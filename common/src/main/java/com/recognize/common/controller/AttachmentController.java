@@ -39,7 +39,7 @@ public class AttachmentController {
      */
     @GetMapping("/{attachmentId}")
     public void downloadAttachment(@PathVariable Long attachmentId, HttpServletResponse response){
-        attachmentService.downloadAttachmentById(attachmentId, response);
+        attachmentService.downloadImageById(attachmentId, response);
     }
 
 

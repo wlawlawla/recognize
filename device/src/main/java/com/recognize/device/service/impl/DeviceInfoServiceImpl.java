@@ -2,18 +2,25 @@ package com.recognize.device.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.recognize.common.common.AttachmentType;
 import com.recognize.common.common.TranslationalService;
 import com.recognize.common.constant.BaseConstants;
 import com.recognize.common.exception.ResultErrorEnum;
 import com.recognize.common.exception.ResultErrorException;
 import com.recognize.common.exception.ValidationError;
+import com.recognize.common.service.IAttachmentService;
 import com.recognize.common.util.VOUtil;
+import com.recognize.common.vo.AttachmentVO;
+import com.recognize.common.vo.PageVO;
 import com.recognize.device.entity.DeviceInfoEntity;
 import com.recognize.device.entity.StationInfoEntity;
 import com.recognize.device.mapper.DeviceInfoMapper;
 import com.recognize.device.mapper.StationInfoMapper;
+import com.recognize.device.parameter.DeviceSearchParameter;
 import com.recognize.device.service.IDeviceInfoService;
 import com.recognize.device.service.IStrapService;
+import com.recognize.device.util.DeviceImageUtil;
 import com.recognize.device.util.DeviceImportUtil;
 import com.recognize.device.vo.DeviceInfoVO;
 import com.recognize.device.vo.StationInfoVO;
@@ -21,12 +28,17 @@ import com.recognize.device.vo.StrapScreenVO;
 import com.recognize.user.vo.BaseUserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Slf4j
 @TranslationalService
@@ -40,6 +52,9 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService {
 
     @Autowired
     private IStrapService strapService;
+
+    @Autowired
+    private IAttachmentService attachmentService;
 
     @Override
     public DeviceInfoVO addDevice(DeviceInfoVO deviceInfoVO, BaseUserVO currentUser){
@@ -62,6 +77,17 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService {
 
         //保存设备信息，拿到设备id
         deviceInfoMapper.insert(deviceInfoEntity);
+
+        File image = new File(deviceInfoEntity.getDeviceName() + ".jpg");
+        DeviceImageUtil.generateImage(deviceInfoEntity.getDeviceId().toString(), image);
+        AttachmentVO attachmentVO = attachmentService.uploadAttachment(image, AttachmentType.DEVICE_IMAGE.getType(), deviceInfoEntity.getDeviceId());
+
+        if (attachmentVO != null && attachmentVO.getId() != null) {
+            deviceInfoEntity.setAttachmentId(attachmentVO.getId());
+            deviceInfoVO.setAttachmentId(attachmentVO.getId());
+            deviceInfoMapper.updateById(deviceInfoEntity);
+        }
+
         List<StrapScreenVO> strapScreenVOList = new ArrayList<>();
 
         //把设备id填充到压板屏幕对象里面，然后保存压板屏幕
@@ -81,6 +107,8 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService {
                 deviceInfoVO.setStationName(stationInfoEntity.getStationName());
             }
         }
+
+        fullDeviceInfoVO(deviceInfoVO);
 
         return deviceInfoVO;
     }
@@ -143,10 +171,41 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService {
                 deviceInfoVO.setStationName(stationInfoEntity.getStationName());
             }
         }
-        //组装压板屏幕列表，不
+        //组装压板屏幕列表，不包含压板定值
         deviceInfoVO.setStrapScreenVOList(strapService.getStrapScreenListByDeviceId(deviceId));
-
+        fullDeviceInfoVO(deviceInfoVO);
         return deviceInfoVO;
+    }
+
+    /**
+     * 组装设备信息:压板统计、二维码地址
+     * @param deviceInfoVO
+     */
+    private void fullDeviceInfoVO(DeviceInfoVO deviceInfoVO){
+        if (deviceInfoVO == null || CollectionUtils.isEmpty(deviceInfoVO.getStrapScreenVOList())){
+            return;
+        }
+
+        List<StrapScreenVO> hardScreenList = deviceInfoVO.getStrapScreenVOList().stream().filter(strapScreenVO -> BaseConstants.STRAP_TYPE_HARD.equals(strapScreenVO.getScreenType())).collect(Collectors.toList());
+        List<StrapScreenVO> softScreenList = deviceInfoVO.getStrapScreenVOList().stream().filter(strapScreenVO -> BaseConstants.STRAP_TYPE_SOFT.equals(strapScreenVO.getScreenType())).collect(Collectors.toList());
+
+        if (CollectionUtils.isNotEmpty(hardScreenList)){
+            hardScreenList.forEach(hardScreen -> {
+                deviceInfoVO.setHardNumber(deviceInfoVO.getHardNumber() + (hardScreen.getStrapNumber() == null ? 0 : hardScreen.getStrapNumber()));
+                deviceInfoVO.setHardColNumber(deviceInfoVO.getHardColNumber() + (hardScreen.getColumnNumber() == null ? 0 : hardScreen.getColumnNumber()));
+                deviceInfoVO.setHardRowNumber(deviceInfoVO.getHardRowNumber() + (hardScreen.getRowNumber() == null ? 0 : hardScreen.getRowNumber()));
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(softScreenList)){
+            deviceInfoVO.setSoftScreenNumber(softScreenList.size());
+            softScreenList.forEach(softScreen -> {
+                deviceInfoVO.setSoftNumber(deviceInfoVO.getSoftNumber() + (softScreen.getStrapNumber() == null ? 0 : softScreen.getStrapNumber()));
+            });
+        }
+
+        deviceInfoVO.setImageUrl();
+
     }
 
     @Override
@@ -201,6 +260,69 @@ public class DeviceInfoServiceImpl implements IDeviceInfoService {
 
         return name;
     }
+
+    @Override
+    public List<StationInfoVO> getStationList(){
+        List<StationInfoEntity> stationInfoEntityList = stationInfoMapper.findAll();
+
+        return VOUtil.getVOList(StationInfoVO.class, stationInfoEntityList);
+    }
+
+
+    @Override
+    public List<DeviceInfoVO> getDeviceInfoByIdIn(List<Long> deviceIds){
+        if (CollectionUtils.isEmpty(deviceIds)){
+            return Collections.emptyList();
+        }
+
+        List<DeviceInfoEntity> deviceInfoEntityList = deviceInfoMapper.findByDeviceIdIn(deviceIds);
+
+        return VOUtil.getVOList(DeviceInfoVO.class, deviceInfoEntityList);
+    }
+
+    @Override
+    public StationInfoVO getStationById(Long stationId){
+        if (stationId == null){
+            return null;
+        }
+        return VOUtil.getVO(StationInfoVO.class, stationInfoMapper.findById(stationId));
+    }
+
+    @Override
+    public PageVO<DeviceInfoVO> searchDevice(Pageable pageable, DeviceSearchParameter searchParameter){
+        Page page = new Page();
+        page.setCurrent(pageable.getPageNumber());
+        page.setSize(pageable.getPageSize());
+
+        Page<DeviceInfoEntity> deviceInfoEntityPage = deviceInfoMapper.searchDevice(page, searchParameter);
+
+        PageVO<DeviceInfoVO> deviceInfoVOPageVO = new PageVO<>();
+        deviceInfoVOPageVO.setPage((int)deviceInfoEntityPage.getCurrent());
+        deviceInfoVOPageVO.setSize((int)deviceInfoEntityPage.getSize());
+        deviceInfoVOPageVO.setTotal(deviceInfoEntityPage.getTotal());
+        List<DeviceInfoVO> deviceInfoVOList = VOUtil.getVOList(DeviceInfoVO.class, deviceInfoEntityPage.getRecords());
+
+        if (CollectionUtils.isNotEmpty(deviceInfoVOList)){
+
+            Map<Long, String> stationNameMap = new HashMap<>();
+            List<Long> stationIds = deviceInfoVOList.stream().map(DeviceInfoVO::getStationId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(stationIds)){
+                List<StationInfoEntity> stations = stationInfoMapper.findByStationIdIn(stationIds);
+                if (CollectionUtils.isNotEmpty(stations)){
+                    stationNameMap.putAll(stations.stream().collect(Collectors.toMap(StationInfoEntity::getStationId, StationInfoEntity::getStationName)));
+                }
+            }
+
+            deviceInfoVOList.forEach(deviceInfoVO -> {
+                fullDeviceInfoVO(deviceInfoVO);
+                deviceInfoVO.setStationName(stationNameMap.get(deviceInfoVO.getStationId()));
+            });
+        }
+
+        deviceInfoVOPageVO.setItems(deviceInfoVOList);
+        return deviceInfoVOPageVO;
+    }
+
 
 
 }

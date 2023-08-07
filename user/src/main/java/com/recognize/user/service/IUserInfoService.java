@@ -70,4 +70,11 @@ public interface IUserInfoService {
      * @return
      */
     BaseUserVO updateUser(BaseUserDto baseUserDto, BaseUserVO currentUser);
+
+    /**
+     * 获取用户基本信息
+     * @param userIds
+     * @return
+     */
+    List<BaseUserVO> getBaseUserVOByUserIdIn(List<Long> userIds);
 }

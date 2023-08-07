@@ -6,8 +6,8 @@
     <resultMap id="BaseResultMap" type="com.recognize.device.entity.StrapDetailEntity">
         <id column="strap_id" jdbcType="BIGINT" property="strapId"/>
         <id column="screen_id" jdbcType="BIGINT" property="screenId"/>
-        <id column="strap_name" jdbcType="VARCHAR" property="strapValue"/>
-        <id column="strap_value" jdbcType="VARCHAR" property="strapName"/>
+        <id column="strap_name" jdbcType="VARCHAR" property="strapName"/>
+        <id column="strap_value" jdbcType="VARCHAR" property="strapValue"/>
         <id column="strap_position" jdbcType="BIGINT" property="strapPosition"/>
         <id column="is_del" jdbcType="BIGINT" property="del"/>
         <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
@@ -22,6 +22,32 @@
 
     <select id="findByStrapId" resultMap="BaseResultMap">
         select c.* from strap_detail c where c.strap_id = #{strapId} and c.is_del = 0
+    </select>
+
+    <select id="searchStrap" resultMap="BaseResultMap">
+        select s.* FROM strap_detail s
+        left join strap_screen c on s.screen_id = c.screen_id
+        left join device_info d on d.device_id = c.device_id
+        where s.is_del = 0 and d.is_del = 0 and c.is_del = 0
+        <if test="param !=null">
+            <if test="param.stationId !=null">
+                and d.station_id = #{param.stationId}
+            </if>
+
+            <if test="param.screenId !=null">
+                and s.screen_id = #{param.screenId}
+            </if>
+
+            <if test="param.deviceId !=null">
+                and d.device_id = #{param.deviceId}
+            </if>
+
+            <if test="param.strapId !=null">
+                and s.strap_id = #{param.strapId}
+            </if>
+        </if>
+        order by s.create_time desc
+
     </select>
 
 </mapper>

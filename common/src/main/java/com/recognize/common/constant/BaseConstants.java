@@ -13,6 +13,11 @@ public class BaseConstants {
     public static Integer BASE_ENTITY_VALID = 0;
 
     /**
+     * 图片url前缀
+     */
+    public static String IMAGE_URL_PREFIX = "/attachment/";
+
+    /**
      * 硬压板识别保留优先级
      */
     public static String CONSTANT_TYPE_LEVEL = "level";
@@ -52,6 +57,16 @@ public class BaseConstants {
      * 压板类型
      */
     public static String CONSTANT_TYPE_STRAP = "strap_type";
+
+    /**
+     * 硬压板
+     */
+    public static Integer STRAP_TYPE_HARD = 1;
+
+    /**
+     * 软压板
+     */
+    public static Integer STRAP_TYPE_SOFT = 2;
 
     /**
      * 软压板屏幕类型

@@ -30,4 +30,10 @@ public interface StationInfoMapper extends BaseMapper<StationInfoEntity> {
      * @return
      */
     StationInfoEntity findByStationName(@Param("stationName") String stationName);
+
+    /**
+     * 获取所有站点
+     * @return
+     */
+    List<StationInfoEntity> findAll();
 }

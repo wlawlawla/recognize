@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recognize.task.mapper.TaskRelationMapper">
+
+    <!-- auto generated map -->
+    <resultMap id="BaseResultMap" type="com.recognize.task.entity.TaskRelationEntity">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <id column="relation_type" jdbcType="BIGINT" property="relationType"/>
+        <id column="task_id" jdbcType="BIGINT" property="taskId"/>
+        <id column="relation_id" jdbcType="BIGINT" property="relationId"/>
+    </resultMap>
+
+    <select id="findByTaskId" resultMap="BaseResultMap">
+        select s.* from task_relation s where s.task_id = #{taskId}
+    </select>
+
+</mapper>

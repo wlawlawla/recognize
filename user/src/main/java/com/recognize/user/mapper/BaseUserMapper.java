@@ -41,6 +41,13 @@ public interface BaseUserMapper extends BaseMapper<BaseUserEntity> {
      */
     Page<BaseUserEntity> searchUser(Page page, @Param("param") UserSearchParameter param);
 
+    /**
+     * 批量查询用户
+     * @param ids
+     * @return
+     */
+    List<BaseUserEntity> findByIdIn(@Param("ids") List<Long> ids);
+
 
 
 }

@@ -2,15 +2,20 @@ package com.recognize.device.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.recognize.common.common.AttachmentType;
 import com.recognize.common.common.TranslationalService;
 import com.recognize.common.constant.BaseConstants;
 import com.recognize.common.exception.ResultErrorEnum;
 import com.recognize.common.exception.ResultErrorException;
 import com.recognize.common.exception.ValidationError;
+import com.recognize.common.service.IAttachmentService;
 import com.recognize.common.service.IConstantService;
 import com.recognize.common.util.VOUtil;
+import com.recognize.common.vo.AttachmentVO;
 import com.recognize.common.vo.ConstantVO;
+import com.recognize.common.vo.PageVO;
 import com.recognize.device.entity.DeviceInfoEntity;
 import com.recognize.device.entity.StationInfoEntity;
 import com.recognize.device.entity.StrapDetailEntity;
@@ -19,16 +24,22 @@ import com.recognize.device.mapper.DeviceInfoMapper;
 import com.recognize.device.mapper.StationInfoMapper;
 import com.recognize.device.mapper.StrapDetailMapper;
 import com.recognize.device.mapper.StrapScreenMapper;
+import com.recognize.device.parameter.ScreenSearchParameter;
+import com.recognize.device.parameter.StrapSearchParameter;
 import com.recognize.device.service.IStrapService;
-import com.recognize.device.vo.StationInfoVO;
 import com.recognize.device.vo.StrapDetailVO;
 import com.recognize.device.vo.StrapScreenVO;
 import com.recognize.user.vo.BaseUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @TranslationalService
@@ -45,6 +56,9 @@ public class StrapServiceImpl extends ServiceImpl<StrapDetailMapper, StrapDetail
 
     @Autowired
     private IConstantService constantService;
+
+    @Autowired
+    private IAttachmentService attachmentService;
 
     Map<String, Integer> strapValueMap;
     Map<String, Integer> softValueMap;
@@ -266,6 +280,7 @@ public class StrapServiceImpl extends ServiceImpl<StrapDetailMapper, StrapDetail
             if (strapScreenVO.getSoftType() != null) {
                 strapScreenVO.setSoftTypeStr(softCodeMap.get(strapScreenVO.getSoftType()));
             }
+            strapScreenVO.setImageUrl();
 
             //如果需要返回压板详情，再去查询
             if (needDetail){
@@ -424,5 +439,84 @@ public class StrapServiceImpl extends ServiceImpl<StrapDetailMapper, StrapDetail
         }
     }
 
+    @Override
+    public void getImage(Long fkSid, Integer type, HttpServletResponse response){
+        attachmentService.downloadImageByTypeAndFkSid(fkSid, type, response);
+    }
+
+    @Override
+    public void uploadScreenImage(Long screenId, MultipartFile file){
+        AttachmentVO attachmentVO = attachmentService.uploadAttachment(file, AttachmentType.SCREEN_IMAGE.getType(), screenId);
+
+        if (attachmentVO != null && attachmentVO.getId() != null){
+            updateScreenAttachmentId(screenId, attachmentVO.getId());
+        }
+    }
+
+    /**
+     * 更新压板屏幕图片id
+     * @param screenId
+     * @param attachmentId
+     */
+    private void updateScreenAttachmentId(Long screenId, Long attachmentId){
+        if (screenId == null){
+            log.warn("screenId is null");
+            return;
+        }
+        StrapScreenEntity screenEntity = strapScreenMapper.findByScreenId(screenId);
+        Long oldAttachmentId = screenEntity.getAttachmentId();
+
+        //删除之前的文件
+        if (oldAttachmentId != null){
+            CompletableFuture.runAsync(() -> attachmentService.deleteById(oldAttachmentId), Executors.newSingleThreadExecutor());
+        }
+
+        if (screenEntity != null){
+            screenEntity.setAttachmentId(attachmentId);
+            strapScreenMapper.updateById(screenEntity);
+        }
+    }
+
+    @Override
+    public PageVO<StrapScreenVO> searchScreen(Pageable pageable, ScreenSearchParameter searchParameter){
+        Page page = new Page();
+        page.setCurrent(pageable.getPageNumber());
+        page.setSize(pageable.getPageSize());
+
+        PageVO<StrapScreenVO> strapScreenVOPageVO = new PageVO<>();
+        Page<StrapScreenEntity> strapScreenEntityPage = strapScreenMapper.searchScreen(page, searchParameter);
+        strapScreenVOPageVO.setPage((int)strapScreenEntityPage.getCurrent());
+        strapScreenVOPageVO.setSize((int)strapScreenEntityPage.getSize());
+        strapScreenVOPageVO.setTotal(strapScreenEntityPage.getTotal());
+
+        List<StrapScreenEntity> strapScreenEntityList = strapScreenEntityPage.getRecords();
+
+        if (CollectionUtils.isNotEmpty(strapScreenEntityList)){
+            strapScreenVOPageVO.setItems(getScreenVOList(strapScreenEntityList, false));
+        }
+
+        return strapScreenVOPageVO;
+    }
+
+    @Override
+    public PageVO<StrapDetailVO> searchStap(Pageable pageable, StrapSearchParameter searchParameter){
+        Page page = new Page();
+        page.setCurrent(pageable.getPageNumber());
+        page.setSize(pageable.getPageSize());
+
+        PageVO<StrapDetailVO> strapDetailVOPageVO = new PageVO<>();
+        Page<StrapDetailEntity> strapDetailEntityPage = baseMapper.searchStrap(page, searchParameter);
+        strapDetailVOPageVO.setPage((int)strapDetailEntityPage.getCurrent());
+        strapDetailVOPageVO.setSize((int)strapDetailEntityPage.getSize());
+        strapDetailVOPageVO.setTotal(strapDetailEntityPage.getTotal());
+
+        List<StrapDetailEntity> strapDetailEntityList = strapDetailEntityPage.getRecords();
+
+        if (CollectionUtils.isNotEmpty(strapDetailEntityList)){
+            strapDetailVOPageVO.setItems(getStrapDetailVOList(strapDetailEntityList));
+        }
+
+        return strapDetailVOPageVO;
+    }
 
 }

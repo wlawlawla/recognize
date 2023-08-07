@@ -35,5 +35,11 @@
         and s.is_del = 0
     </select>
 
+    <select id="findAll" resultMap="BaseResultMap">
+        select s.*
+        FROM station_info s
+        where s.is_del = 0
+    </select>
+
 
 </mapper>

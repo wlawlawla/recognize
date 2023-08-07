@@ -10,6 +10,7 @@
         <id column="device_rfid" jdbcType="VARCHAR" property="deviceRFID"/>
         <id column="station_id" jdbcType="BIGINT" property="stationId"/>
         <id column="order_num" jdbcType="BIGINT" property="orderNumber"/>
+        <id column="attachment_id" jdbcType="BIGINT" property="attachmentId"/>
         <id column="is_del" jdbcType="BIGINT" property="del"/>
         <id column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <id column="create_by" jdbcType="BIGINT" property="createBy"/>
@@ -30,5 +31,31 @@
         FROM device_info s
         where s.device_id = #{id}
           and s.is_del = 0
+    </select>
+
+    <select id="searchDevice" resultMap="BaseResultMap">
+        select d.*
+        FROM device_info d
+        where s.is_del = 0 and d.is_del = 0
+
+        <if test="param !=null">
+            <if test="param.stationId !=null">
+                and d.station_id = #{param.stationId}
+            </if>
+
+            <if test="param.deviceId !=null">
+                and d.device_id = #{param.deviceId}
+            </if>
+
+            <if test="param.deviceName !=null">
+                and instr(d.device_name,#{param.deviceName}) > 0
+            </if>
+
+            <if test="param.deviceNum !=null">
+                and instr(d.device_num, #{param.deviceNum}) > 0
+            </if>
+        </if>
+        order by d.create_time desc
+
     </select>
 </mapper>

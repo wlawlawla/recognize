@@ -1,7 +1,9 @@
 package com.recognize.device.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.recognize.device.entity.StrapScreenEntity;
+import com.recognize.device.parameter.ScreenSearchParameter;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +25,20 @@ public interface StrapScreenMapper extends BaseMapper<StrapScreenEntity> {
      * @return
      */
     List<StrapScreenEntity> findByDeviceId(@Param("deviceId") Long deviceId);
+
+    /**
+     * 查询压板屏幕
+     * @param screenId
+     * @return
+     */
+    StrapScreenEntity findByScreenId(@Param("screenId") Long screenId);
+
+    /**
+     * 搜索压板屏幕
+     * @param page
+     * @param parameter
+     * @return
+     */
+    Page<StrapScreenEntity> searchScreen(Page page, @Param("param")ScreenSearchParameter parameter);
 
 }

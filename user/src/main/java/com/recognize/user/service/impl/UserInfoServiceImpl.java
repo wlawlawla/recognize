@@ -27,6 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -208,6 +209,19 @@ public class UserInfoServiceImpl implements IUserInfoService {
         }
 
         return baseUserVOPageVO;
+    }
+
+    @Override
+    public List<BaseUserVO> getBaseUserVOByUserIdIn(List<Long> userIds){
+        List<BaseUserVO> baseUserVOList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(userIds)){
+            List<BaseUserEntity> userEntities = baseUserMapper.findByIdIn(userIds);
+            if (CollectionUtils.isNotEmpty(userEntities)){
+                baseUserVOList.addAll(VOUtil.getVOList(BaseUserVO.class, userEntities));
+            }
+        }
+
+        return baseUserVOList;
     }
 
 
