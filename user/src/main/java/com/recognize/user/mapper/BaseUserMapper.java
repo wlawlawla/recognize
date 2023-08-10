@@ -49,5 +49,4 @@ public interface BaseUserMapper extends BaseMapper<BaseUserEntity> {
     List<BaseUserEntity> findByIdIn(@Param("ids") List<Long> ids);
 
 
-
 }

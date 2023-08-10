@@ -77,4 +77,11 @@ public interface IUserInfoService {
      * @return
      */
     List<BaseUserVO> getBaseUserVOByUserIdIn(List<Long> userIds);
+
+    /**
+     * 根据角色id查询用户列表
+     * @param roleId
+     * @return
+     */
+    List<BaseUserVO> getBaseUserList(Long roleId);
 }

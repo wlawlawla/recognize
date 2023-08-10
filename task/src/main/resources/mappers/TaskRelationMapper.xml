@@ -14,4 +14,8 @@
         select s.* from task_relation s where s.task_id = #{taskId}
     </select>
 
+    <delete id="deleteByTaskId">
+        delete from task_relation where task_id = #{taskId}
+    </delete>
+
 </mapper>

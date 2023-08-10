@@ -9,6 +9,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
+
+import static java.time.temporal.ChronoField.*;
+import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 
 
 @Slf4j
@@ -17,6 +22,16 @@ public class DateUtils {
     public static final DateTimeFormatter ISO_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
     public static final DateTimeFormatter ISO_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateTimeFormatter NUMBER_DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
+
+    public static final DateTimeFormatter NUMBER_DATE_TIME_FORMAT;
+    static {
+        NUMBER_DATE_TIME_FORMAT = new DateTimeFormatterBuilder()
+                .append(NUMBER_DATE_FORMAT)
+                .appendValue(HOUR_OF_DAY, 2)
+                .appendValue(MINUTE_OF_HOUR, 2)
+                .appendValue(SECOND_OF_MINUTE, 2)
+                .appendFraction(NANO_OF_SECOND, 0, 9, false).toFormatter();
+    }
 
     public static LocalDate getISODate(String str) {
         if (str == null) {

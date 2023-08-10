@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -80,6 +81,16 @@ public class BaseUserController {
     @PreAuthorize("hasAnyAuthority('" + PrivilegeConstants.USER_VIEW + "')")
     public ResponseEntity<PageVO<BaseUserVO>> searchUser(@PageableDefault(page = 1, size = 10) Pageable pageable, @RequestBody UserSearchParameter userSearchParameter){
         return new ResponseEntity<>(userInfoService.searchUserPage(pageable, userSearchParameter), HttpStatus.OK);
+    }
+
+    /**
+     * 查询用户列表
+     * @param roleId
+     * @return
+     */
+    @GetMapping("/list")
+    public ResponseEntity<List<BaseUserVO>> getUserList(@RequestParam(value = "roleId", required = false) Long roleId){
+        return new ResponseEntity<>(userInfoService.getBaseUserList(roleId), HttpStatus.OK);
     }
 
 }

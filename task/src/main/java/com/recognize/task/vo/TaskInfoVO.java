@@ -26,6 +26,11 @@ public class TaskInfoVO {
     private String taskName;
 
     /**
+     * 任务编号
+     */
+    private String taskNumber;
+
+    /**
      * 巡检周期
      */
     private String taskCycle;

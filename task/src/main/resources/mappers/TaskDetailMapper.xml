@@ -8,6 +8,7 @@
         <id column="task_type" jdbcType="VARCHAR" property="taskType"/>
         <id column="task_name" jdbcType="VARCHAR" property="taskName"/>
         <id column="task_cycle" jdbcType="VARCHAR" property="taskCycle"/>
+        <id column="task_num" jdbcType="VARCHAR" property="taskNumber"/>
         <id column="remark" jdbcType="VARCHAR" property="remark"/>
         <id column="station_id" jdbcType="BIGINT" property="stationId"/>
         <id column="status" jdbcType="VARCHAR" property="status"/>
@@ -22,4 +23,48 @@
     </resultMap>
 
 
+    <select id="findByTaskId" resultMap="BaseResultMap">
+        select  t.* from task_detail t where t.task_id = #{taskId}
+    </select>
+
+    <select id="searchTask" resultMap="BaseResultMap">
+        select t.* from task_detail t where 1 = 1
+        <if test="param != null">
+            <if test="param.taskId != null">
+                and t.task_id = #{param.taskId}
+            </if>
+            <if test="param.stationId != null">
+                and t.station_id = #{param.stationId}
+            </if>
+            <if test="param.taskName != null">
+                and instr(t.task_name , #{param.taskName}) > 0
+            </if>
+            <if test="param.taskNumber != null">
+                and instr(t.task_num , #{param.taskNumber}) > 0
+            </if>
+        </if>
+
+
+    </select>
+
+    <select id="getCurrentTask" resultMap="BaseResultMap">
+        select distinct t.* from task_detail t
+        left join task_relation r on t.task_id = r.task_id
+        where t.status = 'doing'
+        <if test="userId != null">
+            and r.relation_id = #{userId}
+        </if>
+
+        <if test="relationType != null">
+            and r.relation_type = #{relationType}
+        </if>
+        <choose>
+            <when test="relationType != null">
+                and r.relation_type = #{relationType}
+            </when>
+            <otherwise>
+                and r.relation_type in (2 ,3)
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

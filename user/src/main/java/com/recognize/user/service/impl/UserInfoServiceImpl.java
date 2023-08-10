@@ -1,5 +1,6 @@
 package com.recognize.user.service.impl;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.recognize.common.common.TranslationalService;
@@ -12,6 +13,7 @@ import com.recognize.user.dao.BaseUserDto;
 import com.recognize.user.entity.BasePrivilegeEntity;
 import com.recognize.user.entity.BaseRoleEntity;
 import com.recognize.user.entity.BaseUserEntity;
+import com.recognize.user.entity.BaseUserRoleXwEntity;
 import com.recognize.user.mapper.*;
 import com.recognize.user.parameter.UserSearchParameter;
 import com.recognize.user.service.IUserDepartmentXwService;
@@ -55,6 +57,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
 
     @Autowired
     private IUserRoleXwService userRoleXwService;
+
+    @Autowired
+    private BaseUserRoleXwMapper baseUserRoleXwMapper;
 
 
     @Override
@@ -219,6 +224,21 @@ public class UserInfoServiceImpl implements IUserInfoService {
             if (CollectionUtils.isNotEmpty(userEntities)){
                 baseUserVOList.addAll(VOUtil.getVOList(BaseUserVO.class, userEntities));
             }
+        }
+
+        return baseUserVOList;
+    }
+
+    @Override
+    public List<BaseUserVO> getBaseUserList(Long roleId){
+        List<BaseUserVO> baseUserVOList = new ArrayList<>();
+        if (roleId != null){
+            List<BaseUserRoleXwEntity> roleXw = baseUserRoleXwMapper.findByRoleId(roleId);
+            if (CollectionUtils.isNotEmpty(roleXw)){
+                baseUserVOList.addAll(VOUtil.getVOList(BaseUserVO.class, baseUserMapper.findByIdIn(roleXw.stream().map(BaseUserRoleXwEntity::getUserId).collect(Collectors.toList()))));
+            }
+        }else {
+            baseUserVOList.addAll(VOUtil.getVOList(BaseUserVO.class, baseUserMapper.findAll()));
         }
 
         return baseUserVOList;

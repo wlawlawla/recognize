@@ -29,6 +29,9 @@ public class TaskDetailEntity implements Serializable {
     @TableField(value = "task_cycle")
     private String taskCycle;
 
+    @TableField(value = "task_num")
+    private String taskNumber;
+
     @TableField(value = "remark")
     private String remark;
 

@@ -6,6 +6,10 @@ import java.util.List;
 
 @Data
 public class TaskInfoDto {
+    /**
+     * 任务id
+     */
+    private Long taskId;
 
     /**
      * 站点id
@@ -23,6 +27,11 @@ public class TaskInfoDto {
     private String taskName;
 
     /**
+     * 任务编号
+     */
+    private String taskNumber;
+
+    /**
      * 负责人id
      */
     private List<Long> directorIds;
@@ -36,6 +45,11 @@ public class TaskInfoDto {
      * 巡检周期
      */
     private String taskCycle;
+
+    /**
+     * 巡检状态
+     */
+    private String status;
 
     /**
      * 巡检设备id

@@ -52,6 +52,16 @@ public class BaseConstants {
      */
     public static String CONSTANT_INSPECTION_STATUS = "inspection_status";
 
+    /**
+     * 巡检状态
+     */
+    public static String CONSTANT_INSPECTION_STATUS_DOING = "doing";
+
+    /**
+     * 巡检状态
+     */
+    public static String CONSTANT_INSPECTION_STATUS_DONE = "done";
+
 
     /**
      * 压板类型

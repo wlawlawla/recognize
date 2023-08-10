@@ -57,7 +57,7 @@ public class ModeConfig {
     public YoloModelHard getHard() throws IOException, OrtException{
         File modelFile = FileUtil.getFile(this, HardModelPath, HardModelPath);
         String modelPathReal = modelFile.getCanonicalPath();
-        return new YoloModelHard(modelPathReal, Float.parseFloat(nmsThreshold), Integer.parseInt(gpuDeviceId), modelFile, Arrays.asList(hardLabel.replace(" ", "").split(", ")));
+        return new YoloModelHard(modelPathReal, Float.parseFloat(nmsThreshold), Integer.parseInt(gpuDeviceId), modelFile, Arrays.asList(hardLabel.replace(" ", "").split(",")));
     }
 
 

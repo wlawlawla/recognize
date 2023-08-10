@@ -7,10 +7,13 @@ public enum RelationType {
     DEVICE(1),
 
     /**
-     *
+     * 负责人
      */
     DIRECTOR_USER(2),
 
+    /**
+     * 工作组成员
+     */
     WORKER_USER(3)
 
 

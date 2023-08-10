@@ -61,7 +61,7 @@
     </select>
 
     <select id="findByIdIn" resultMap="BaseResultMap">
-        select b.* from base_user b where b.is_del = 0 and b..status = 1
+        select b.* from base_user b where b.is_del = 0 and b.status = 1
         and b.user_id in
         <foreach collection="ids" item="item" index="index" separator="," open="(" close=")">
             #{item}
