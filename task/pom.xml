@@ -20,7 +20,7 @@
 
         <dependency>
             <groupId>com.recognize</groupId>
-            <artifactId>device</artifactId>
+            <artifactId>onnx</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

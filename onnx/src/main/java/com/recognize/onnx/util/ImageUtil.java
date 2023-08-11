@@ -123,14 +123,14 @@ public class ImageUtil {
                     color,     //Scalar object for color
                     4                       //Thickness of the line
             );
-            Imgproc.putText(
+/*            Imgproc.putText(
                     img,
                     detection.getLabel(),
                     new Point(bbox[0] - 1, bbox[1] - 5),
                     Imgproc.FONT_HERSHEY_SIMPLEX,
                     3, color,
                     5);
-        }
-    }
+        }*/
+    }}
 
 }

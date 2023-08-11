@@ -11,6 +11,8 @@ import com.recognize.onnx.vo.DetectionSortVO;
 import com.recognize.onnx.yolo.Detection;
 import com.recognize.onnx.yolo.Yolo;
 import com.recognize.onnx.util.ImageUtil;
+import com.recognize.onnx.yolo.YoloModelHard;
+import com.recognize.onnx.yolo.YoloModelSoft;
 import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -30,6 +32,12 @@ public class DetectionServiceImpl implements IDetectionService {
 
     @Autowired
     private IConstantService constantService;
+
+    @Autowired
+    private YoloModelHard yoloModelHard;
+
+    @Autowired
+    private YoloModelSoft yoloModelSoft;
 
     //标记优先级
     private Map<String, Integer> levelMap = new HashMap<>();
@@ -56,6 +64,36 @@ public class DetectionServiceImpl implements IDetectionService {
         }
     }
 
+    private Yolo getYoloByStrapType(Integer strapType){
+        Yolo yolo = null;
+        if (BaseConstants.STRAP_TYPE_SOFT.equals(strapType)) {
+            yolo = yoloModelSoft;
+        }
+
+        if (BaseConstants.STRAP_TYPE_HARD.equals(strapType)) {
+            yolo = yoloModelHard;
+        }
+        return yolo;
+    }
+
+    @Override
+    public List<DetectionSortVO> recognize(Mat img, int size, Integer strapType){
+        List<DetectionSortVO> detectionList = null;
+        try {
+            detectionList = recognize(getYoloByStrapType(strapType), img, size);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return detectionList;
+    }
+
+    @Override
+    public void drawAndWriteImage(Mat img, String name, Integer strapType, List<Detection> drawList){
+        ImageUtil.drawPredictions(img, drawList, getYoloByStrapType(strapType).getLabelMap());
+        Imgcodecs.imwrite(name, img);
+    }
+
+
 
     @Override
     public List<Detection> recognize(Yolo yoloModel, MultipartFile uploadFile, int size) throws OrtException, IOException{
@@ -73,15 +111,38 @@ public class DetectionServiceImpl implements IDetectionService {
         List<DetectionSortVO> detectionSortVOList = getDetectionSortList(result);
         for (int i = 0; i < detectionSortVOList.size(); i++){
             drawList.addAll(detectionSortVOList.get(i).getDetectionList());
-            for (int j = 0; j < detectionSortVOList.get(i).getDetectionList().size(); j++){
+/*            for (int j = 0; j < detectionSortVOList.get(i).getDetectionList().size(); j++){
                 detectionSortVOList.get(i).getDetectionList().get(j).setLabel(i+"-"+j+"-"+detectionSortVOList.get(i).getDetectionList().get(j).getLabel());
-            }
+            }*/
         }
 
         ImageUtil.drawPredictions(img, drawList, yoloModel.getLabelMap());
 
         Imgcodecs.imwrite("predictions.jpg", img);
-        return result;
+        return drawList;
+    }
+
+    public List<DetectionSortVO> recognize(Yolo yoloModel, Mat img, int size) throws OrtException, IOException{
+
+        List<Detection> result = recognize(yoloModel, img, size, PARAM_CONF);
+
+/*        if (CollectionUtils.isNotEmpty(result)){
+            result.sort(Comparator.comparing(Detection::getConfidence));
+            Collections.reverse(result);
+        }*/
+        List<Detection> drawList = new ArrayList<>();
+        List<DetectionSortVO> detectionSortVOList = getDetectionSortList(result);
+/*         for (int i = 0; i < detectionSortVOList.size(); i++){
+            drawList.addAll(detectionSortVOList.get(i).getDetectionList());
+           for (int j = 0; j < detectionSortVOList.get(i).getDetectionList().size(); j++){
+                detectionSortVOList.get(i).getDetectionList().get(j).setLabel(i+"-"+j+"-"+detectionSortVOList.get(i).getDetectionList().get(j).getLabel());
+            }
+        }
+*/
+/*        ImageUtil.drawPredictions(img, drawList, yoloModel.getLabelMap());
+
+        Imgcodecs.imwrite("predictions.jpg", img);*/
+        return detectionSortVOList;
     }
 
     /**
